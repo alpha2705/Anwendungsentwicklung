@@ -1,0 +1,175 @@
+1. Was ist der Unterschied zwischen "Text-Mode" und "Binary-Mode"?
+
+Text Mode: Die Daten werden zeichenweise (1 Zeichen >= 1 Byte)ausgelesen
+Binary-Mode: Die Daten werden byteweise ausgelesen. 
+Dateien werden standardmäßig im Text-Mode geöffnet.
+Der Binäry-Mode wird mit dem Parameter 'b' geöffnet. Im Gegensatz zum Text-Mode wird hier kein Encoding-Parameter erlaubt, da Bytes eingelesen werden.
+
+-------------------------------------------
+
+2.Wozu ist das Einstellen des "Encoding" notwendig?
+
+   Um Texte korrekt ein- und auszulesen benötigt man Infos zur verwendeten Kodierung.
+   Es gibt immer ein Standard-Encoding des Betriebssystems. Dies ist nicht immer das richtige für eine Datei. Python verwendet als Standard utf-8. 
+   Die Encoding Einstellungen müssen jedes mal vorgenommen werden, da sonst Probleme zwischen den verschiedenen Betriebssystemen auftreten.
+   Encoding ist der Name der Kodierung für die Dekodierung bzw. Kodierung bei der Übertragung einer Textdatei. Dieses Argument darf somit nur im Textmodus verwendet werden. Mit dem Befehl "codecs" kann man eine Liste der unterstützten Kodierungen aufrufen.
+-----------------
+
+3. Was kann durch falsches "Encoding" passieren"?
+
+Die Zeichen können teilweise nicht richtig decondiert werden, sodass der reader sie nicht lesen kann
+Durch nicht korrektes Encoding kann die Datei falsch gelesen werden. Zum Beispiel in einer Textdatei die nicht mit UTF-8 geöffnet wird werden Umlaute falsch bzw. nicht als Character dargestellt.
+Durch falsches Encoding ist der Python Interprter gezwungen das default encoding zu verwenden. Dadurch können die Zeichen(characters) nicht richtig gelesen werden und man bekommt die Fehlermeldung : UnicodeDecodeError
+----------------------
+
+4. Warum muss man Dateiobjekte schließen?
+
+Um reservierten Speicher wieder frei zu geben.
+Zudem kann nur ein User zur Zeit auf eine Datei zugreifen. Wenn eine Datei geöffnet ist, kann ein anderer User nicht darauf zugreifen. Mehrfach gleichzeitig Lesen ist häufig möglich.
+Erst wenn man Dateiobjekte schließt, weiß das System das man fertig mit schreiben ist. Somit wird die Datei für das Lesen/Ausführen vorbereitet.
+Dateienobjekte müssen immer geschlossen werden da sonst eventuell Programme die auf diese Dateien zugreifen müssen keinen Zugriff mehr für diese Datei bekommen.
+-----------------------
+
+5.  Welchen Vorteil bringt das "with" statement?
+
+Der IOStream wird in einem Runtime Task geöffnet, die immer vom Programm beendet wird, selbst wenn eine Exception geworfen wird. Beim Beenden der Runtime wird der Reader automatisch beendet und die Datei geschlossen.
+Das 'with' Statement beginnt einen neuen Anweisungs-Block. Sobald man den Block verlässt, sei es durch ein normales Beenden oder durch eine Excepion, wird die geöffnete Datei geschlossen. Dies ist sehr praktisch da man sonst bei einer Eception die Datei manuell schließen müsste.
+Durch das with Statement wird, nachdem der with Block abgelaufen ist, automatisch von Python ein a_file.close() angefügt, was dafür sorgt dass, die Datei automatisch geschlossen wird.
+Das Programm wird übersichtlicher und fehlerfrteier. Da das close() nicht vergessen werden kann.
+
+---------------------
+
+6.  Wie werden Dateipfade in der open() Funktion angegeben? Welches Problem wird damit gelöst?
+
+Dateipfade können relativ oder absolut sein. Dadurch spart man viel geschreibe. Zudem kann man immer Pfade mit "/" angeben, das Programm übersetzt den Pfad für Windows immer automatisch, sodass man kein "\" benutzen muss.
+Dateipfade werden hier als String angegeben. Es ist eine Kombination aus dem Verzeichnis und den Dateinamen. Unterverzeichnisse werden durch ein "/" getrennt. Dies funktioniert in Python unabhängig vom Betriebssystem, obwohl unter Windows normalerweise der "\" benutzt.
+In der open() Funktion wird das Verzeichnis und der Dateinamen zusammen in der Klammer angegeben. In Python wird jedoch nur eines benötigt und das ist der Dateiname und man kann einen Teil des Pfades angeben.
+  
+---------------------------
+7.  Wozu dient die seek() Methode?
+
+Sie setzt den Pointer zu dem Byte, was man angibt. Von dort aus kann dann weitergelesen werden.
+Die Seek-Methode dient zum ändern des Dateizeigers in einer Datei. Somit kann man den Dateizeiger bspw. auf 5 setzen und mit 'write' den Wert auf "Hallo" setzen.
+Mit der seek() Funktion kann man an einen beliebigen Byte in der sich momentan befindenden Datei springen.
+--------------------------------
+
+8.  Jedes Datei-Objekt ist auch ein Iterator. Was ist damit gemeint?
+
+Um Dateien zu öffnen, wird immer ein Stream-Objekt angelegt, welches durch die Datei iteriert. Das heißt, jedes Mal wenn lesend auf den Stream zugegriffen wird, gibt er die nächste Zeile innerhalb dieser Datei zurück.
+Ein Iterator bezeichnet einen Zeiger, der es einem erlaubt auf alle Elemente einer Liste zuzugreifen ohne das man Kenntnisse der Datenstruktur braucht. z.B: Beim Auslesen einer Kodieren springt der Zeiger (Iterator) eine vordefinierte Distanz weiter.
+--------------------------
+
+9.  Erläutern Sie die Bedeutung des Encoding für Dateien die im Binary Modus geöffnet sind.
+
+Binäre Dateien werden byteweise ausgelesen, und daher nicht kodiert.
+Der Encoding Parameter für Dateien die im Binärmodus geöffnet sind, ist überflüssig und damit nicht zulässig. 
+Im Binary-mode findet kein Encoding statt, da man mit bytes anstatt in strings(kodiereten Zeichen) arbeitet und so eine Übersetzung keinen Sinn 
+ergibt.
+
+'r'	This is the default mode. It Opens file for reading.
+'w'	This Mode Opens file for writing.
+If file does not exist, it creates a new file.
+If file exists it truncates the file.
+'x'	Creates a new file. If file already exists, the operation fails.
+'a'	Open file in append mode.
+If file does not exist, it creates a new file.
+'t'	This is the default mode. It opens in text mode.
+'b'	This opens in binary mode.
+'+'	This will open a file for reading and writing (updating)
+
+ #myfile = open("names.txt", "rt")
+#line = myfile.readline()		#muss erst was eingelesen werden
+#while(line):					#solange line != "" ungleich leer
+#	print(line, end="")			#end="" in print gleich kein Zeilenumbruch
+#	line = myfile.readline()	
+#myfile.close()
+
+#myfile = open("names.txt", "rt") 	#Textmodus einlesen
+#for line in myfile:
+#	print(line, end="")
+#myfile.close()
+
+#myfile = open("names.txt", "rb")	#Binär einlesen
+#content = myfile.read(8)
+#while(content):
+#	print(content)
+#	content = myfile.read(8)
+#myfile.close()						#\r\n Windows Zeilenumbruch
+
+#Schreiben Sie ein Kopierprogramm
+#myfile = open("names.txt", "rt")
+#outfile = open("names_copy.txt", "wt") #write modus
+
+#for line in myfile:
+#	outfile.write(line)
+#myfile.close()
+#outfile.close()
+
+#infile = open("PHY-16-Formelsammlung.pdf", "rb")
+#outfile = open("PHY-16-Formelsammlung_copy.pdf", "wb") #write modus binär pdf kopieren
+
+#content = infile.read(10240) # 10KB
+#while content:
+#	outfile.write(content)
+#	content = infile.read(10240)
+#	print(content)
+#
+#infile.close()
+#outfile.close()
+
+#GIF Erkenner
+breite = 0
+hoehe = 0
+
+myfile = open("smiley.gif", "rb")
+line = myfile.read(420)
+#print(line, end="")				
+if line[0:4] == b"GIF8":
+	breite = line[6] + line[7] * 256
+	hoehe = line[8] + line[9] * 130
+	print("Es ist ein .gif!","Breite", breite, "Hoehe", hoehe, end="")
+else:
+	print("Die Datei ist kein .gif!")	
+myfile.close()
+
+with open(filename, „rb“) as infile:
+	content = infile.read(10)
+filehandling datei wird immer korrekt geschlossen
+
+import os
+os.remove("lineNumber.txt")
+f_in = open("demofile.txt", "r")
+f_out = open("lineNumber.txt", "x")
+f_out.close()
+f_out = open("lineNumber.txt", "a")
+ion = 0
+for line in f_in:
+    ion = ion + 1
+    print(str(ion).zfill(3)+":",line, end = "")
+    f_out.write(str(ion).zfill(3)+":" + line)
+f_in.close()
+f_out.close()
+
+def main():
+    f= open("guru99.txt","w+")
+    #f=open("guru99.txt","a+")
+    for i in range(10):
+         f.write("This is line %d\r\n" % (i+1))
+    f.close()
+    #Open the file back and read the contents
+    #f=open("guru99.txt", "r")
+    #if f.mode == 'r':
+    #   contents =f.read()
+    #    print (contents)
+    #or, readlines reads the individual line into a list
+    #fl =f.readlines()
+    #for x in fl:
+    #print(x)
+if __name__== "__main__":
+  main()
+
+Python allows you to read, write and delete files
+Use the function open("filename","w+") to create a file. The + tells the python interpreter to open file with read and write permissions.
+To append data to an existing file use the command open("Filename", "a")
+Use the read function to read the ENTIRE contents of a file
+Use the readlines function to read the content of the file one by one.
